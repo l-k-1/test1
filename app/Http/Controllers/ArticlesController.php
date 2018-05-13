@@ -2,6 +2,7 @@
 
 namespace Corp\Http\Controllers;
 
+use Corp\Category;
 use Corp\Repositories\ArticlesRepository;
 use Corp\Repositories\PortfoliosRepository;
 use Corp\Repositories\CommentsRepository;
@@ -22,10 +23,10 @@ class ArticlesController extends SiteController
         $this->bar = 'right';
         $this->template = env('THEME').'.articles';
     }
-    public function index()
+    public function index($cat_alias = FALSE)
     {
         //
-        $articles = $this->getArticles();
+        $articles = $this->getArticles($cat_alias);
 
         $content = view(env('THEME').'.articles_content')->with('articles',$articles)->render();
         $this->vars = array_add($this->vars,'content',$content);
@@ -40,7 +41,13 @@ class ArticlesController extends SiteController
 
     protected function getArticles($alias = FALSE)
     {
-        $articles = $this->a_rep->get(['id','title','created_at','alias','img','desc','category_id','user_id'],FALSE,TRUE);
+        $where = FALSE;
+
+        if($alias) {
+            $id = Category::select('id')->where('alias',$alias)->first()->id;
+            $where = ['category_id',$id];
+        }
+        $articles = $this->a_rep->get(['id','title','created_at','alias','img','desc','category_id','user_id'],FALSE,TRUE, $where);
 
         if ($articles){
             $articles->load('user','category','comments');
