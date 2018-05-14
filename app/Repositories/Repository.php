@@ -42,6 +42,7 @@ abstract class Repository  {
     public function one ($alias, $attr = []) {
         $result = $this->model->where('alias',$alias)->first();
 
+
         return $result;
     }
 
