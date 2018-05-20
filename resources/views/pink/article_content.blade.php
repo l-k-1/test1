@@ -41,20 +41,22 @@
                 <span>{{ count($article->comments) }}</span> {{ Lang::choice('ru.comments',count($article->comments)) }}
             </h3>
 
-            @set($com, $article->comments->groupBy('parent_id'))
+            @if(count($article->comments) > 0)
+                @set($com, $article->comments->groupBy('parent_id'))
 
-            <ol class="commentlist group">
+                <ol class="commentlist group">
 
-                @foreach($com as $k => $comments)
-                    @if($k !== 0)
-                        @break
-                    @endif
+                    @foreach($com as $k => $comments)
+                        @if($k !== 0)
+                            @break
+                        @endif
 
-                    @include(env('THEME').'.comment',['items' => $comments])
+                        @include(env('THEME').'.comment',['items' => $comments])
 
-                @endforeach
+                    @endforeach
 
-            </ol>
+                </ol>
+            @endif
 
             <!-- START TRACKBACK & PINGBACK -->
             <h2 id="trackbacks">Trackbacks and pingbacks</h2>
@@ -71,6 +73,8 @@
                     <p class="comment-form-comment"><label for="comment">Your comment</label><textarea id="comment" name="comment" cols="45" rows="8"></textarea></p>
                     <div class="clear"></div>
                     <p class="form-submit">
+                        <input id="comment_post_ID" type="hidden" name="comment_post_ID" value="{{ $article->id }}" />
+                        <input id="comment_parent" type="hidden" name="comment_parent" value="" />
                         <input name="submit" type="submit" id="submit" value="Post Comment" />
                     </p>
                 </form>
